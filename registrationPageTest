@@ -1,0 +1,87 @@
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+import java.time.Duration;
+
+public class registrationTest {
+
+    public WebDriver driver;
+
+    @BeforeMethod
+    public void setUp(){
+        System.setProperty("WebDriver.Chrome.driver", "C:\\selenium\\chromedriver_win32\\chromedriver.exe");
+        driver = new ChromeDriver();
+        driver.get("https://qaregform.ccbp.tech/");
+    }
+
+    @AfterMethod
+    public void tearDown(){
+        driver.quit();
+    }
+
+    @Test
+    public void testRegisterWithEmptyInputs(){
+        WebElement submitButtonEl = driver.findElement(By.className("submit-button"));
+        submitButtonEl.submit();
+
+        WebElement firstNameError = driver.findElement(By.xpath("//p[1]"));
+        String actualText1 = firstNameError.getText();
+        Assert.assertEquals(actualText1, "Required", "Error text with empty input field do not match");
+
+        WebElement lastNameError = driver.findElement(By.xpath("//p[2]"));
+        String actualText2 = lastNameError.getText();
+        Assert.assertEquals(actualText2, "Required", "Error text with empty input field do not match");
+
+    }
+
+    @Test (priority = 1)
+    public void testRegisterWithEmptyFirstName(){
+        WebElement lastNameEl = driver.findElement(By.xpath("//input[@id='lastName']"));
+        lastNameEl.sendKeys("Doe");
+
+        WebElement submitButtonEl = driver.findElement(By.className("submit-button"));
+        submitButtonEl.submit();
+
+        WebElement firstNameError = driver.findElement(By.xpath("//p"));
+        String actualText = firstNameError.getText();
+        Assert.assertEquals(actualText, "Required", "Error text at first name do not match");
+    }
+
+    @Test (priority = 2)
+    public void testRegisterWithEmptyLastName(){
+        WebElement firstNameEl = driver.findElement(By.xpath("//input[@id='firstName']"));
+        firstNameEl.sendKeys("John");
+
+        WebElement submitButtonEl = driver.findElement(By.className("submit-button"));
+        submitButtonEl.submit();
+
+        WebElement lastNameError = driver.findElement(By.xpath("//p"));
+        String actualText = lastNameError.getText();
+        Assert.assertEquals(actualText, "Required", "Error text at last name do not match");
+    }
+
+    @Test (priority = 3)
+    public void testRegisterWithValidCred(){
+        WebElement firstNameEl = driver.findElement(By.xpath("//input[@id='firstName']"));
+        firstNameEl.sendKeys("John");
+        WebElement lastNameEl = driver.findElement(By.xpath("//input[@id='lastName']"));
+        lastNameEl.sendKeys("Doe");
+        WebElement submitButtonEl = driver.findElement(By.className("submit-button"));
+        submitButtonEl.submit();
+
+        WebDriverWait wait = new WebDriverWait(driver,Duration.ofSeconds(5));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".success-image + p")));
+
+        WebElement successMessage = driver.findElement(By.cssSelector(".success-image + p"));
+        String actualText = successMessage.getText();
+        Assert.assertEquals(actualText, "Submitted Successfully", "Success message do not match");
+    }
+}
