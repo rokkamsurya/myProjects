@@ -1,0 +1,70 @@
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+public class TimeConverterTest {
+    public static void main(String[] args){
+        System.setProperty("WebDriver.Chrome.driver", "C:\\selenium\\chromedriver_win32\\chromedriver.exe");
+
+        WebDriver driver = new ChromeDriver();
+        driver.get("https://qatimeconverter.ccbp.tech/");
+
+        WebElement input1 = driver.findElement(By.xpath("//input[position()=1]"));
+        input1.sendKeys("2");
+
+        WebElement input2 = driver.findElement(By.xpath("//input[position()=2]"));
+        input2.sendKeys("30");
+
+        WebElement convertButton = driver.findElement(By.xpath("//button[contains(@id, 'convert')]"));
+        convertButton.click();
+
+        WebElement result = driver.findElement(By.xpath("//p[starts-with(@mclass, 'converted')]"));
+        String actualText = result.getText();
+        String expectedText = "9000s";
+
+        if (actualText.equals(expectedText)){
+            System.out.println("Conversion Successful");
+        }else {
+            System.out.println("Conversion Failed");
+        }
+
+        input1.clear();
+        input2.clear();
+        convertButton.click();
+
+        WebElement error = driver.findElement(By.xpath("//p[starts-with(@class, 'error')]"));
+        String actualText2 = error.getText();
+        String expectedText2 = "Please enter a valid number of hours.";
+
+        if (actualText2.equals(expectedText2)){
+            System.out.println("Expected Error Message Shown");
+        }else {
+            System.out.println("Unexpected Error Message Shown");
+        }
+
+        input1.sendKeys("1");
+        convertButton.click();
+        String actualText3 = error.getText();
+        String expectedText3 = "Please enter a valid number of minutes.";
+
+        if (actualText3.equals(expectedText3)){
+            System.out.println("Expected Error Message Shown");
+        }else {
+            System.out.println("Unexpected Error Message Shown");
+        }
+
+        input2.sendKeys("15");
+        convertButton.click();
+        String actualText4 = result.getText();
+        String expectedText4 = "4500s";
+
+        if (actualText4.equals(expectedText4)){
+            System.out.println("Conversion Successful");
+        }else {
+            System.out.println("Conversion Failed");
+        }
+
+        driver.quit();
+    }
+}
